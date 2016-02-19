@@ -1,4 +1,4 @@
-package com.coolweather.db;
+package com.coolweather.app.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,8 +18,8 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper {
 	/**
 	 * City表建表语句
 	 * */
-	public static final String CREATE_CITY = "creat table City("
-			+"id integer primary key autoincement, "
+	public static final String CREATE_CITY = "create table City("
+			+"id integer primary key autoincrement, "
 			+"city_name text, "
 			+"city_code text, "
 			+"province_id integer)";
@@ -27,8 +27,8 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper {
 	/**
 	 * County表建表语句
 	 * */
-	public static final String CREATE_COUNTY = "creat table County("
-			+"id integer primary key autoincement, "
+	public static final String CREATE_COUNTY = "create table County("
+			+"id integer primary key autoincrement, "
 			+"county_name text, "
 			+"county_code text, "
 			+"city_id integer)";	
@@ -42,15 +42,32 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL(CREATE_PROVINCE);
-		db.execSQL(CREATE_CITY);
-		db.execSQL(CREATE_COUNTY);
+		try {			
+			db.execSQL(CREATE_PROVINCE);
+			db.execSQL(CREATE_CITY);
+			db.execSQL(CREATE_COUNTY);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO Auto-generated method stub
-
+		db.execSQL("drop table if exists Province");
+		db.execSQL("drop table if exists City");
+		db.execSQL("drop table if exists County");
+		onCreate(db);
+		/*switch (oldVersion) {
+        case 2:
+			db.execSQL(CREATE_PROVINCE);
+			db.execSQL(CREATE_CITY);
+			db.execSQL(CREATE_COUNTY);
+            break;
+        default:
+            break;
+        }*/
 	}
 
 }

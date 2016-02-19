@@ -1,11 +1,13 @@
-package com.coolweather.db;
+package com.coolweather.app.db;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.coolweather.model.City;
-import com.coolweather.model.County;
-import com.coolweather.model.Province;
+import com.coolweather.app.model.City;
+import com.coolweather.app.model.County;
+import com.coolweather.app.model.JsonCity;
+import com.coolweather.app.model.JsonCounty;
+import com.coolweather.app.model.Province;
 
 import android.R.integer;
 import android.R.string;
@@ -24,7 +26,7 @@ public class CoolWeatherDB {
 	/**
 	 * 数据库版本
 	 * */
-	public static final int VERSION = 1;
+	public static final int VERSION = 11;
 	
 	private static CoolWeatherDB coolWeatherDB;
 	private SQLiteDatabase db;
@@ -53,6 +55,43 @@ public class CoolWeatherDB {
 			values.put("province_name", province.getProvinceName());
 			values.put("province_code", province.getProvinceCode());
 			db.insert("Province", null, values);
+		}
+	}
+	/*
+	 * 保存属于Province下的City
+	 * */
+	public void saveCities(Province province, List<JsonCity> cities, List<JsonCounty> counties){
+		Cursor cursor = db.query("Province", null, "province_name = ?",
+				new String[] { province.getProvinceName() }, null, null, null);
+		if (cursor.moveToFirst()) {	
+			int provinceId = cursor.getInt(cursor.getColumnIndex("id"));
+			for (JsonCity city : cities) {
+				if(city.getProvince().equals(province.getProvinceName())){
+					City c = new City();
+					c.setCityCode(city.getCityName());
+					c.setCityName(city.getCityName());
+					c.setProvinceId(provinceId);
+					saveCity(c);
+					//保存City下的County
+					saveCounties(c, counties);
+				}
+			}
+		}
+	}
+	public void saveCounties(City city, List<JsonCounty> counties){
+		Cursor cursor = db.query("City", null, "city_name = ?",
+				new String[] { city.getCityName() }, null, null, null);
+		if (cursor.moveToFirst()) {	
+			int cityId = cursor.getInt(cursor.getColumnIndex("id"));
+			for (JsonCounty county : counties) {
+				if(county.getCity().equals(city.getCityName())){
+					County c = new County();
+					c.setCountyCode(county.getCountyName());
+					c.setCountyName(county.getCountyName());
+					c.setCityId(cityId);
+					saveCounty(c);
+				}
+			}
 		}
 	}
 	/**
