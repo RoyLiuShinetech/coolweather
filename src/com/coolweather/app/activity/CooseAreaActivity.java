@@ -15,7 +15,10 @@ import com.coolweather.app.R;
 import android.R.integer;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -51,6 +54,15 @@ public class CooseAreaActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		if(prefs.getBoolean("city_selected", false)){
+			Intent intent = new Intent(this, Weatheractivity.class);
+			startActivity(intent);
+			finish();
+			return;
+		}
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_area);
 		listView = (ListView) findViewById(R.id.list_view);
@@ -70,7 +82,13 @@ public class CooseAreaActivity extends Activity {
 				} else if(currentLevel == LEVEL_CITY){
 					selectedCity = cityList.get(position);
 					queryCounties();
-				}				
+				} else if(currentLevel == LEVEL_COUNTY){
+					String countyCode = countyList.get(position).getCountyCode();
+					Intent intent = new Intent(CooseAreaActivity.this, Weatheractivity.class);
+					intent.putExtra("county_code", countyCode);
+					startActivity(intent);
+					finish();
+				}			
 			}
 		});
 		
@@ -116,7 +134,7 @@ public class CooseAreaActivity extends Activity {
 
 	private void queryFromServer(final String code, final String type) {
 		// TODO Auto-generated method stub
-		String address = "http://114.245.240.126:8080/api/province";
+		String address = "http://125.34.105.77:8080/api/province";
 		/*if(!TextUtils.isEmpty(code)){
 			address = "http://114.245.240.126/data/list3/city" + code + ".xml";
 		}
