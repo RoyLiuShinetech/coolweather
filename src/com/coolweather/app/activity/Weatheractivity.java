@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 
 import com.coolweather.app.R;
 import com.coolweather.app.R.string;
+import com.coolweather.app.service.AutoUpdateService;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.Utility;
@@ -80,6 +81,9 @@ public class Weatheractivity extends Activity implements android.view.View.OnCli
 		currentDateText.setText(prefs.getString("current_date", ""));
 		weatherInfoLayout.setVisibility(View.VISIBLE);
 		cityNameText.setVisibility(View.VISIBLE);
+		
+		Intent i = new Intent(this, AutoUpdateService.class);
+		startService(i);
 	}
 
 	/*
